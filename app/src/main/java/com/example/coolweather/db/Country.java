@@ -16,7 +16,7 @@ public class Country extends LitePalSupport {
     /**
      * 记录县对应的天气
      */
-    private int weatherId;
+    private String weatherId;
     /**
      * 记录县所属市的ID
      */
@@ -39,11 +39,11 @@ public class Country extends LitePalSupport {
         this.countryName = countryName;
     }
 
-    public int getWeatherId() {
+    public String getWeatherId() {
         return weatherId;
     }
 
-    public void setWeatherId(int weatherId) {
+    public void setWeatherId(String weatherId) {
         this.weatherId = weatherId;
     }
 

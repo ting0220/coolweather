@@ -1,5 +1,6 @@
 package com.example.coolweather;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -75,6 +76,12 @@ public class ChooseAreaFragment extends Fragment {
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(i);
                 queryCountries();
+            } else if (currentLevel == LEVEL_COUNTRY) {
+                String weatherId = countryList.get(i).getWeatherId();
+                Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                intent.putExtra("weather_id", weatherId);
+                getActivity().startActivity(intent);
+                getActivity().finish();
             }
         });
         backImg.setOnClickListener(v -> {
@@ -91,7 +98,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCountries() {
         titleText.setText(selectedCity.getCityName());
         backImg.setVisibility(View.VISIBLE);
-        countryList = LitePal.findAll(Country.class);
+        countryList = LitePal.where("cityid=?",String.valueOf(selectedCity.getId())).find(Country.class);
         if (countryList.size() > 0) {
             dataList.clear();
             for (Country country : countryList) {
@@ -104,7 +111,7 @@ public class ChooseAreaFragment extends Fragment {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
-            queryFromSever(address, "city");
+            queryFromSever(address, "country");
         }
 
     }
@@ -112,7 +119,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
         backImg.setVisibility(View.VISIBLE);
-        cityList = LitePal.findAll(City.class);
+        cityList = LitePal.where("provinceid=?",String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {
@@ -120,7 +127,7 @@ public class ChooseAreaFragment extends Fragment {
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
-            currentLevel = LEVEL_COUNTRY;
+            currentLevel = LEVEL_CITY;
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
             String address = "http://guolin.tech/api/china/" + provinceCode;
