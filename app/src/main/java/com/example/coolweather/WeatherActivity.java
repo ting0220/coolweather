@@ -1,5 +1,6 @@
 package com.example.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
+import com.example.coolweather.service.AutoUpdateService;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.Utility;
 
@@ -42,7 +44,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView carWashText;
     private TextView sportText;
     private ImageView backgroundImg;
-    public  SwipeRefreshLayout swipeRefreshLayout;
+    public SwipeRefreshLayout swipeRefreshLayout;
     private ImageView navImg;
     public DrawerLayout drawerLayout;
 
@@ -172,7 +174,7 @@ public class WeatherActivity extends AppCompatActivity {
      *
      * @param weatherId
      */
-    public  void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=5a1c07c9880845bd91e4e063fdc27739";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -195,6 +197,8 @@ public class WeatherActivity extends AppCompatActivity {
                         editor.putString("weather", responseText);
                         editor.apply();
                         showWeatherInfo(weather);
+                        Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
+                        startService(intent);
                     } else {
                         Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                     }
