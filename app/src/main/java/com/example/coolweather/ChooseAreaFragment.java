@@ -78,10 +78,17 @@ public class ChooseAreaFragment extends Fragment {
                 queryCountries();
             } else if (currentLevel == LEVEL_COUNTRY) {
                 String weatherId = countryList.get(i).getWeatherId();
-                Intent intent = new Intent(getActivity(), WeatherActivity.class);
-                intent.putExtra("weather_id", weatherId);
-                getActivity().startActivity(intent);
-                getActivity().finish();
+                if (getActivity() instanceof MainActivity) {
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    getActivity().startActivity(intent);
+                    getActivity().finish();
+                } else if (getActivity() instanceof WeatherActivity) {
+                    WeatherActivity activity = (WeatherActivity) getActivity();
+                    activity.drawerLayout.closeDrawers();
+                    activity.swipeRefreshLayout.setRefreshing(false);
+                    activity.requestWeather(weatherId);
+                }
             }
         });
         backImg.setOnClickListener(v -> {
@@ -98,7 +105,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCountries() {
         titleText.setText(selectedCity.getCityName());
         backImg.setVisibility(View.VISIBLE);
-        countryList = LitePal.where("cityid=?",String.valueOf(selectedCity.getId())).find(Country.class);
+        countryList = LitePal.where("cityid=?", String.valueOf(selectedCity.getId())).find(Country.class);
         if (countryList.size() > 0) {
             dataList.clear();
             for (Country country : countryList) {
@@ -119,7 +126,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
         backImg.setVisibility(View.VISIBLE);
-        cityList = LitePal.where("provinceid=?",String.valueOf(selectedProvince.getId())).find(City.class);
+        cityList = LitePal.where("provinceid=?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {
